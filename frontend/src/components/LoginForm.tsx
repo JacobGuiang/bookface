@@ -4,7 +4,9 @@ const LoginForm = (): ReactElement => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (): void => {};
+  const handleSubmit = (): void => {
+    return;
+  };
 
   return (
     <form onSubmit={handleSubmit}>

@@ -1,21 +1,9 @@
-import express from 'express';
-import loginRouter from './login/loginRouter';
-import userRouter from './user/userRouter';
-import { errorHandler } from './utils/middleware';
-import { PORT } from './utils/config';
+import http from 'http';
+import app from './app';
+import config from './utils/config';
 
-const app = express();
-app.use(express.json());
+const server = http.createServer(app);
 
-app.get('/ping', (req, res) => {
-  console.log('someone pinged here');
-  res.send('pong');
-});
-
-app.use('/api/login', loginRouter);
-app.use('/api/user', userRouter);
-app.use(errorHandler);
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(config.PORT, () => {
+  console.log(`Server running on port ${config.PORT}`);
 });
