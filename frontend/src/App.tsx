@@ -1,9 +1,10 @@
 import React, { ReactElement } from 'react';
+import LoginForm from './components/LoginForm';
 
 const App = (): ReactElement => {
   return (
     <div>
-      <div>hello world</div>
+      <LoginForm />
     </div>
   );
 };
