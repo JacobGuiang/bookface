@@ -1,9 +1,11 @@
 import express from 'express';
 require('express-async-errors');
 import mongoose from 'mongoose';
-import loginRouter from './login/loginRouter';
-import userRouter from './user/userRouter';
-import { errorHandler } from './utils/middleware';
+import cookieParser from 'cookie-parser';
+import loginRouter from './controllers/loginRouter';
+import logoutRouter from './controllers/logoutRouter';
+import userRouter from './controllers/userRouter';
+import middleware from './utils/middleware';
 import config from './utils/config';
 
 mongoose
@@ -17,14 +19,17 @@ mongoose
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
-app.get('/ping', (req, res) => {
+app.get('/ping', (_req, res) => {
   console.log('someone pinged here');
   res.send('pong');
 });
 
+app.use(middleware.userExtractor);
 app.use('/api/login', loginRouter);
+app.use('/api/logout', logoutRouter);
 app.use('/api/users', userRouter);
-app.use(errorHandler);
+app.use(middleware.errorHandler);
 
 export default app;

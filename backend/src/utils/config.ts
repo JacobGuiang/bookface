@@ -21,11 +21,15 @@ if (!process.env.PORT) {
   throw new Error('PORT not found in process.env');
 }
 
+if (!process.env.JWT_SECRET_KEY) {
+  throw new Error('JWT_SECRET_KEY not found in process.env');
+}
+
 const MONGODB_URI =
   process.env.NODE_ENV === 'test'
     ? process.env.TEST_MONGODB_URI
     : process.env.MONGODB_URI;
-
 const PORT = Number(process.env.PORT);
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
-export default { MONGODB_URI, PORT };
+export default { MONGODB_URI, PORT, JWT_SECRET_KEY };
