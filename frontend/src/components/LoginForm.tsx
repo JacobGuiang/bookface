@@ -1,24 +1,26 @@
-import React, { useState, ReactElement } from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch } from '../hooks';
 import { loginUser } from '../reducers/userReducer';
 
-const LoginForm = (): ReactElement => {
+const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    dispatch(loginUser(username, password));
-    setUsername('');
-    setPassword('');
+    try {
+      dispatch(loginUser(username, password));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        username
         <input
+          placeholder="Username"
           value={username}
           onChange={({ target }) => {
             setUsername(target.value);
@@ -26,8 +28,8 @@ const LoginForm = (): ReactElement => {
         />
       </div>
       <div>
-        password
         <input
+          placeholder="Password"
           value={password}
           onChange={({ target }) => {
             setPassword(target.value);
@@ -35,7 +37,7 @@ const LoginForm = (): ReactElement => {
           type="password"
         />
       </div>
-      <button type="submit">login</button>
+      <button type="submit">Log In</button>
     </form>
   );
 };

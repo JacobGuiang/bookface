@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './hooks';
 import { getLoggedInUser, logoutUser } from './reducers/userReducer';
-import LoginForm from './components/LoginForm';
+import LoginPage from './components/LoginPage';
 
 const App = (): ReactElement => {
   const dispatch = useAppDispatch();
@@ -15,7 +15,7 @@ const App = (): ReactElement => {
   if (!user) {
     return (
       <div>
-        <LoginForm />
+        <LoginPage />
       </div>
     );
   }

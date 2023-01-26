@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { NewUser } from '../types';
 
 const baseUrl = '/api/users';
 
@@ -9,4 +10,9 @@ const getLoggedInUser = async () => {
   return response.data;
 };
 
-export default { getLoggedInUser };
+const createUser = async (user: NewUser) => {
+  const response = await axios.post(baseUrl, user);
+  return response.data;
+};
+
+export default { getLoggedInUser, createUser };

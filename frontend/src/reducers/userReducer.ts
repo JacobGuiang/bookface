@@ -2,11 +2,12 @@ import { AnyAction } from 'redux';
 import { RootState } from '../store';
 import { ThunkAction } from 'redux-thunk';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IUser } from '../types';
+import { User, NewUser } from '../types';
 import userService from '../services/userService';
 import authService from '../services/authService';
+import { isAxiosError } from 'axios';
 
-type UserState = IUser | null;
+type UserState = User | null;
 
 const initialState = null as UserState;
 
@@ -14,7 +15,7 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setUser: (_state, action: PayloadAction<IUser>) => {
+    setUser: (_state, action: PayloadAction<User>) => {
       return action.payload;
     },
     clearUser: () => {
@@ -35,7 +36,11 @@ export const loginUser =
       const user = await authService.login({ username, password });
       dispatch(setUser(user));
     } catch (err) {
-      console.log(err);
+      if (isAxiosError(err) && err.response) {
+        console.log(err.response.data.error);
+      } else {
+        console.log(err);
+      }
     }
   };
 
@@ -45,7 +50,11 @@ export const logoutUser =
       await authService.logout();
       dispatch(clearUser());
     } catch (err) {
-      console.log(err);
+      if (isAxiosError(err) && err.response) {
+        console.log(err.response.data.error);
+      } else {
+        console.log(err);
+      }
     }
   };
 
@@ -55,7 +64,27 @@ export const getLoggedInUser =
       const user = await userService.getLoggedInUser();
       dispatch(setUser(user));
     } catch (err) {
-      console.log(err);
+      if (isAxiosError(err) && err.response) {
+        console.log(err.response.data.error);
+      } else {
+        console.log(err);
+      }
+    }
+  };
+
+export const registerUser =
+  (userToRegister: NewUser): ThunkAction<void, RootState, unknown, AnyAction> =>
+  async (dispatch) => {
+    try {
+      const user = await userService.createUser(userToRegister);
+      dispatch(setUser(user));
+      dispatch(loginUser(userToRegister.username, userToRegister.password));
+    } catch (err) {
+      if (isAxiosError(err) && err.response) {
+        console.log(err.response.data.error);
+      } else {
+        console.log(err);
+      }
     }
   };
 

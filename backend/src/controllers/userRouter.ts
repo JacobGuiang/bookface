@@ -19,11 +19,22 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, firstName, lastName } = req.body;
 
-  if (!username || !password) {
+  if (!username || !password || !firstName || !lastName) {
     return res.status(400).json({
-      error: 'missing username or password',
+      error: 'missing username, password, first name, or last name',
+    });
+  }
+  if (!validator.isAlphanumeric(username, undefined, { ignore: '_.' })) {
+    return res.status(400).json({
+      error:
+        'username can only contain letters, underscores (_), and periods (.)',
+    });
+  }
+  if (!validator.isAlpha(firstName) || !validator.isAlpha(lastName)) {
+    return res.status(400).json({
+      error: 'first name and last name can only contains letters',
     });
   }
   if (!validator.isStrongPassword(password)) {
@@ -36,7 +47,7 @@ router.post('/', async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = new User({ username, passwordHash });
+  const user = new User({ username, passwordHash, firstName, lastName });
   const savedUser = await user.save();
 
   res.status(201).json(savedUser);
