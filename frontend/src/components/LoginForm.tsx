@@ -1,11 +1,17 @@
 import React, { useState, ReactElement } from 'react';
+import { useAppDispatch } from '../hooks';
+import { loginUser } from '../reducers/userReducer';
 
 const LoginForm = (): ReactElement => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useAppDispatch();
 
-  const handleSubmit = (): void => {
-    return;
+  const handleSubmit = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    dispatch(loginUser(username, password));
+    setUsername('');
+    setPassword('');
   };
 
   return (

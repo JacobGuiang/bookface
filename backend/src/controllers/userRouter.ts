@@ -5,6 +5,19 @@ import validator from 'validator';
 
 const router = express.Router();
 
+router.get('/loggedInUser', async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'not logged in' });
+  }
+  const user = await User.findById(req.user.id);
+  res.json(user);
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.json(user);
+});
+
 router.post('/', async (req, res) => {
   const { username, password } = req.body;
 

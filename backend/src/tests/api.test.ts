@@ -9,6 +9,20 @@ afterAll(() => {
   mongoose.connection.close();
 });
 
+test('endpoints respond with json', async () => {
+  await api.get('/api/auth/login/status').expect('Content-Type', /json/);
+
+  await api
+    .post('/api/auth/login')
+    .send({ username: 'admin', password: '$trongPassword1' })
+    .expect('Content-Type', /json/);
+
+  await api
+    .post('/api/users')
+    .send({ username: 'newUser', password: '$trongPassword1' })
+    .expect('Content-Type', /json/);
+});
+
 describe('user', () => {
   describe('user creation', () => {
     beforeEach(async () => {
@@ -67,20 +81,6 @@ describe('user', () => {
   });
 });
 
-test('endpoints respond with json', async () => {
-  await api.get('/api/login/status').expect('Content-Type', /json/);
-
-  await api
-    .post('/api/login')
-    .send({ username: 'admin', password: '$trongPassword1' })
-    .expect('Content-Type', /json/);
-
-  await api
-    .post('/api/users')
-    .send({ username: 'newUser', password: '$trongPassword1' })
-    .expect('Content-Type', /json/);
-});
-
 describe('login', () => {
   beforeAll(async () => {
     await User.deleteMany({});
@@ -91,7 +91,7 @@ describe('login', () => {
 
   test('user can login', async () => {
     await api
-      .post('/api/login')
+      .post('/api/auth/login')
       .send({ username: 'admin', password: '$trongPassword1' })
       .expect(200);
   });
@@ -99,25 +99,28 @@ describe('login', () => {
   describe('login fails if credentials are invalid', () => {
     test('missing username', async () => {
       await api
-        .post('/api/login')
+        .post('/api/auth/login')
         .send({ password: '$trongPassword1' })
         .expect(400);
     });
 
     test('missing password', async () => {
-      await api.post('/api/login').send({ username: 'newUser' }).expect(400);
+      await api
+        .post('/api/auth/login')
+        .send({ username: 'newUser' })
+        .expect(400);
     });
 
     test('username does not exist', async () => {
       await api
-        .post('/api/login')
+        .post('/api/auth/login')
         .send({ username: 'nonExistingUser', password: '$trongPassword1' })
         .expect(400);
     });
 
     test('password is incorrect', async () => {
       await api
-        .post('/api/login')
+        .post('/api/auth/login')
         .send({ username: 'admin', password: 'wrongpassword' })
         .expect(400);
     });
