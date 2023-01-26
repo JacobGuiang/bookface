@@ -1,10 +1,12 @@
 import { Types } from 'mongoose';
 
-export interface IUser {
+export interface User {
   username: string;
   passwordHash: string;
+  firstName: string;
+  lastName: string;
 }
 
-export interface IToken {
+export interface Token {
   id: Types.ObjectId;
 }
