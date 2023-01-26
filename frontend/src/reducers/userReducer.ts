@@ -78,7 +78,7 @@ export const registerUser =
     try {
       const user = await userService.createUser(userToRegister);
       dispatch(setUser(user));
-      dispatch(loginUser(user.username, user.password));
+      dispatch(loginUser(userToRegister.username, userToRegister.password));
     } catch (err) {
       if (isAxiosError(err) && err.response) {
         console.log(err.response.data.error);
