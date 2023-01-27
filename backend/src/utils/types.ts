@@ -3,8 +3,11 @@ import { Types } from 'mongoose';
 export interface User {
   username: string;
   passwordHash: string;
-  firstName: string;
-  lastName: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  friendRequests: [Types.ObjectId];
 }
 
 export interface Token {

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { User } from '../utils/types';
 
 const schema = new mongoose.Schema<User>({
@@ -10,13 +10,19 @@ const schema = new mongoose.Schema<User>({
     type: String,
     required: true,
   },
-  firstName: {
-    type: String,
-    required: true,
+  name: {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
   },
-  lastName: {
-    type: String,
-    required: true,
+  friendRequests: {
+    type: [Types.ObjectId],
+    ref: 'User',
   },
 });
 

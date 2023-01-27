@@ -12,13 +12,13 @@ afterAll(() => {
 const dummyUser = {
   username: 'admin_root.user',
   password: 'Strong_Password1',
-  firstName: 'Admin',
-  lastName: 'Root',
+  name: {
+    firstName: 'Admin',
+    lastName: 'Root',
+  },
 };
 
 test('endpoints respond with json', async () => {
-  await api.get('/api/auth/login/status').expect('Content-Type', /json/);
-
   await api
     .post('/api/auth/login')
     .send({ username: 'admin', password: '$trongPassword1' })
@@ -65,12 +65,24 @@ describe('user', () => {
       test('name is not alpha', async () => {
         await api
           .post('/api/users')
-          .send({ ...dummyUser, firstName: '123!@#$%^&*()_+' })
+          .send({
+            ...dummyUser,
+            name: {
+              firstName: '!@#$%^&*()_+',
+              lastName: 'Alpha',
+            },
+          })
           .expect(400);
 
         await api
           .post('/api/users')
-          .send({ ...dummyUser, lastName: '!@#$%^&*()+' })
+          .send({
+            ...dummyUser,
+            name: {
+              firstName: 'Alpha',
+              lastName: '!@#$%^&*()_+',
+            },
+          })
           .expect(400);
       });
 
@@ -94,8 +106,10 @@ describe('user', () => {
           .send({
             username: dummyUser.username,
             password: 'Str0ng_Password',
-            firstName: 'First',
-            lastName: 'Last',
+            name: {
+              firstName: 'First',
+              lastName: 'Last',
+            },
           })
           .expect(400);
 

@@ -6,6 +6,8 @@ export interface User {
 export interface NewUser {
   username: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
 }
