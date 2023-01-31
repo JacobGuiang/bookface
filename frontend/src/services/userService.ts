@@ -4,7 +4,7 @@ import { NewUser } from '../types';
 const baseUrl = '/api/users';
 
 const getLoggedInUser = async () => {
-  const response = await axios.get(`${baseUrl}/loggedInUser`, {
+  const response = await axios.get(`${baseUrl}/loggedIn`, {
     withCredentials: true,
   });
   return response.data;

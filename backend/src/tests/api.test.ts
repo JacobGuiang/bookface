@@ -1,6 +1,6 @@
 import app from '../app';
 import request from 'supertest';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import User from '../models/userModel';
 
 const api = request(app);
@@ -18,14 +18,14 @@ const dummyUser = {
   },
 };
 
-test('endpoints respond with json', async () => {
-  await api
-    .post('/api/auth/login')
-    .send({ username: 'admin', password: '$trongPassword1' })
-    .expect('Content-Type', /json/);
-
-  await api.post('/api/users').send(dummyUser).expect('Content-Type', /json/);
-});
+const dummyUser2 = {
+  username: 'fizzbuzz',
+  password: 'Strong_Password2',
+  name: {
+    firstName: 'Fizz',
+    lastName: 'Buzz',
+  },
+};
 
 describe('user', () => {
   describe('user creation', () => {
@@ -117,6 +117,37 @@ describe('user', () => {
         expect(foundUsers.length).toBe(1);
       });
     });
+  });
+});
+
+describe('friend requests', () => {
+  let fromId: Types.ObjectId | undefined;
+  let toId: Types.ObjectId | undefined;
+
+  beforeEach(async () => {
+    await User.deleteMany({});
+    await api.post('/api/users').send(dummyUser);
+    await api.post('/api/users').send(dummyUser2);
+
+    const fromUser = await User.findOne({ username: dummyUser.username });
+    fromId = fromUser?._id;
+    const toUser = await User.findOne({ username: dummyUser2.username });
+    toId = toUser?._id;
+  });
+
+  test('friend request can be sent', async () => {
+    await api
+      .post(`/api/friendRequests`)
+      .send({ fromId: fromId?.toString(), toId: toId?.toString() })
+      .expect(201);
+
+    const updatedFromUser = await User.findById(fromId);
+    let e = updatedFromUser?.friendRequestsTo.includes(toId as Types.ObjectId);
+    expect(e).toBe(true);
+
+    const updatedToUser = await User.findById(toId);
+    e = updatedToUser?.friendRequestsFrom.includes(fromId as Types.ObjectId);
+    expect(e).toBe(true);
   });
 });
 

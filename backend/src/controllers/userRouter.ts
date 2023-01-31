@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
   res.status(201).json(savedUser);
 });
 
-router.get('/loggedInUser', async (req, res) => {
+router.get('/loggedIn', async (req, res) => {
   if (!req.user) {
     return res.status(401).json({ error: 'not logged in' });
   }
@@ -52,41 +52,6 @@ router.get('/loggedInUser', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
   res.json(user);
-});
-
-router.post('/:id/friends/requests', async (req, res) => {
-  const requestingUserId = req.body.id;
-  const receivingUserId = req.params.id;
-
-  const requestingUser = await User.findById(requestingUserId);
-  if (!requestingUser) {
-    return res
-      .status(400)
-      .json({ error: `invalid requesting user id: ${requestingUserId}` });
-  }
-
-  const receivingUser = await User.findById(receivingUserId);
-  if (!receivingUser) {
-    return res
-      .status(400)
-      .json({ error: `invalid receiving user id: ${receivingUserId}` });
-  }
-
-  if (receivingUser.friendRequests.includes(requestingUserId)) {
-    return res.status(400).json({
-      error: `friend request already sent from ${requestingUser.username} to ${receivingUser.username}`,
-    });
-  }
-
-  receivingUser.friendRequests.push(requestingUserId);
-  const updatedUser = await receivingUser.save();
-  const result = await updatedUser.populate('friendRequests', {
-    username: 1,
-  });
-  res.json({
-    username: result.username,
-    friendRequests: result.friendRequests,
-  });
 });
 
 export default router;

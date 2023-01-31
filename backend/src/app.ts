@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRouter from './controllers/authRouter';
 import userRouter from './controllers/userRouter';
+import friendRequestRouter from './controllers/friendRequestsRouter';
 import middleware from './utils/middleware';
 import config from './utils/config';
 
@@ -30,6 +31,7 @@ app.get('/ping', (_req, res) => {
 app.use(middleware.userExtractor);
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
+app.use('/api/friendRequests', friendRequestRouter);
 app.use(middleware.errorHandler);
 
 export default app;

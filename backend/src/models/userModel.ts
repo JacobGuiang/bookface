@@ -1,5 +1,5 @@
-import mongoose, { Types } from 'mongoose';
-import { User } from '../utils/types';
+import mongoose, { Schema } from 'mongoose';
+import { User } from '../../types/types';
 
 const schema = new mongoose.Schema<User>({
   username: {
@@ -14,15 +14,28 @@ const schema = new mongoose.Schema<User>({
     firstName: {
       type: String,
       required: true,
+      lowercase: true,
     },
     lastName: {
       type: String,
       required: true,
+      lowercase: true,
     },
   },
-  friendRequests: {
-    type: [Types.ObjectId],
+  friends: {
+    type: [Schema.Types.ObjectId],
     ref: 'User',
+    default: [],
+  },
+  friendRequestsFrom: {
+    type: [Schema.Types.ObjectId],
+    ref: 'FriendRequest',
+    default: [],
+  },
+  friendRequestsTo: {
+    type: [Schema.Types.ObjectId],
+    ref: 'FriendRequest',
+    default: [],
   },
 });
 

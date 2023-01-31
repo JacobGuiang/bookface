@@ -1,7 +1,7 @@
 import config from './config';
 import jwt from 'jsonwebtoken';
 import { RequestHandler, ErrorRequestHandler } from 'express';
-import { Token } from '../utils/types';
+import { Token } from '../../types/types';
 
 const userExtractor: RequestHandler = (req, res, next) => {
   const token = req.cookies.token;
