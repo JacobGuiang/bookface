@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
-import { useAppDispatch } from '../hooks';
-import { loginUser } from '../reducers/userReducer';
+import { useState, useContext, SyntheticEvent } from 'react';
+import { useMutation } from 'react-query';
+import { logError } from '../utils/helpers';
+import authService from '../services/authService';
+import { CurrentUserContext } from '../App';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useAppDispatch();
+  const currentUserContext = useContext(CurrentUserContext);
 
-  const handleSubmit = (event: React.SyntheticEvent) => {
+  const mutation = useMutation(authService.login, {
+    onError: (error) => {
+      logError(error);
+    },
+    onSuccess: (data) => {
+      console.log('logging in');
+      currentUserContext.setCurrentUser(data);
+    },
+  });
+
+  const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
-    dispatch(loginUser(username, password));
+    mutation.mutate({ username, password });
   };
 
   return (

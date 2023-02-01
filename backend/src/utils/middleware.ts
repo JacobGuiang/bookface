@@ -1,7 +1,7 @@
 import config from './config';
 import jwt from 'jsonwebtoken';
 import { RequestHandler, ErrorRequestHandler } from 'express';
-import { Token } from '../../types/types';
+import type { Token } from '../types/types';
 
 const userExtractor: RequestHandler = (req, res, next) => {
   const token = req.cookies.token;
@@ -10,7 +10,8 @@ const userExtractor: RequestHandler = (req, res, next) => {
   }
   try {
     const decodedToken = jwt.verify(token, config.JWT_SECRET_KEY);
-    req.user = { id: (decodedToken as Token).id };
+    const { id, username, name } = decodedToken as Token;
+    req.user = { id, username, name };
   } catch (err) {
     console.log('token error', err);
     res.clearCookie('token');

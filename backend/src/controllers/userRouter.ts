@@ -41,14 +41,6 @@ router.post('/', async (req, res) => {
   res.status(201).json(savedUser);
 });
 
-router.get('/loggedIn', async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'not logged in' });
-  }
-  const user = await User.findById(req.user.id);
-  res.json(user);
-});
-
 router.get('/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
   res.json(user);

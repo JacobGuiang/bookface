@@ -1,18 +1,21 @@
-interface BaseUser {
-  username: string;
-  name: {
-    firstName: string;
-    lastName: string;
-  };
+interface Name {
+  firstName: string;
+  lastName: string;
 }
 
-export interface User extends BaseUser {
+export interface User {
   id: string;
-  friends: User[];
-  friendRequestsFrom: User[];
-  friendRequestsTo: User[];
+  username: string;
+  name: Name;
 }
 
-export interface NewUser extends BaseUser {
+export interface UserToRegister {
+  username: string;
+  name: Name;
   password: string;
+}
+
+export interface CurrentUserContextType {
+  currentUser: User | null;
+  setCurrentUser: (u: User | null) => void;
 }

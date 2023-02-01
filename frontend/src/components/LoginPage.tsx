@@ -1,11 +1,11 @@
 import LoginForm from './LoginForm';
-import RegisterButton from './RegisterButton';
+import RegisterForm from './RegisterForm';
 
 const LoginPage = () => {
   return (
     <div>
       <LoginForm />
-      <RegisterButton />
+      <RegisterForm />
     </div>
   );
 };

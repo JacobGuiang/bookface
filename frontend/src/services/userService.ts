@@ -1,18 +1,11 @@
 import axios from 'axios';
-import { NewUser } from '../types';
+import { UserToRegister } from '../types';
 
 const baseUrl = '/api/users';
 
-const getLoggedInUser = async () => {
-  const response = await axios.get(`${baseUrl}/loggedIn`, {
-    withCredentials: true,
-  });
-  return response.data;
-};
-
-const createUser = async (user: NewUser) => {
+const createUser = async (user: UserToRegister) => {
   const response = await axios.post(baseUrl, user);
   return response.data;
 };
 
-export default { getLoggedInUser, createUser };
+export default { createUser };
