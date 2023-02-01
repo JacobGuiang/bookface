@@ -5,21 +5,9 @@ import validator from 'validator';
 
 const router = express.Router();
 
-router.get('/loggedInUser', async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'not logged in' });
-  }
-  const user = await User.findById(req.user.id);
-  res.json(user);
-});
-
-router.get('/:id', async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.json(user);
-});
-
 router.post('/', async (req, res) => {
-  const { username, password, firstName, lastName } = req.body;
+  const { username, password, name } = req.body;
+  const { firstName, lastName } = name;
 
   if (!username || !password || !firstName || !lastName) {
     return res.status(400).json({
@@ -47,10 +35,23 @@ router.post('/', async (req, res) => {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = new User({ username, passwordHash, firstName, lastName });
+  const user = new User({ username, passwordHash, name });
   const savedUser = await user.save();
 
   res.status(201).json(savedUser);
+});
+
+router.get('/loggedIn', async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'not logged in' });
+  }
+  const user = await User.findById(req.user.id);
+  res.json(user);
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.json(user);
 });
 
 export default router;

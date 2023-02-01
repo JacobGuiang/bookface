@@ -11,7 +11,9 @@ const RegisterModal = () => {
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    dispatch(registerUser({ username, password, firstName, lastName }));
+    dispatch(
+      registerUser({ username, password, name: { firstName, lastName } })
+    );
   };
 
   return (

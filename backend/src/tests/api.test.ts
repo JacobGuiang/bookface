@@ -1,7 +1,8 @@
 import app from '../app';
 import request from 'supertest';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import User from '../models/userModel';
+import FriendRequest from '../models/friendRequestModel';
 
 const api = request(app);
 
@@ -12,20 +13,29 @@ afterAll(() => {
 const dummyUser = {
   username: 'admin_root.user',
   password: 'Strong_Password1',
-  firstName: 'Admin',
-  lastName: 'Root',
+  name: {
+    firstName: 'Admin',
+    lastName: 'Root',
+  },
 };
 
-test('endpoints respond with json', async () => {
-  await api.get('/api/auth/login/status').expect('Content-Type', /json/);
+const dummyUser2 = {
+  username: 'fizzbuzz',
+  password: 'Strong_Password2',
+  name: {
+    firstName: 'Fizz',
+    lastName: 'Buzz',
+  },
+};
 
-  await api
-    .post('/api/auth/login')
-    .send({ username: 'admin', password: '$trongPassword1' })
-    .expect('Content-Type', /json/);
-
-  await api.post('/api/users').send(dummyUser).expect('Content-Type', /json/);
-});
+const dummyUser3 = {
+  username: 'leagueplayer',
+  password: 'Strong_Password3',
+  name: {
+    firstName: 'Lee',
+    lastName: 'Sin',
+  },
+};
 
 describe('user', () => {
   describe('user creation', () => {
@@ -65,12 +75,24 @@ describe('user', () => {
       test('name is not alpha', async () => {
         await api
           .post('/api/users')
-          .send({ ...dummyUser, firstName: '123!@#$%^&*()_+' })
+          .send({
+            ...dummyUser,
+            name: {
+              firstName: '!@#$%^&*()_+',
+              lastName: 'Alpha',
+            },
+          })
           .expect(400);
 
         await api
           .post('/api/users')
-          .send({ ...dummyUser, lastName: '!@#$%^&*()+' })
+          .send({
+            ...dummyUser,
+            name: {
+              firstName: 'Alpha',
+              lastName: '!@#$%^&*()_+',
+            },
+          })
           .expect(400);
       });
 
@@ -94,14 +116,84 @@ describe('user', () => {
           .send({
             username: dummyUser.username,
             password: 'Str0ng_Password',
-            firstName: 'First',
-            lastName: 'Last',
+            name: {
+              firstName: 'First',
+              lastName: 'Last',
+            },
           })
           .expect(400);
 
         const foundUsers = await User.find({ username: dummyUser.username });
         expect(foundUsers.length).toBe(1);
       });
+    });
+  });
+});
+
+describe('friend requests', () => {
+  let fromId: Types.ObjectId | undefined;
+  let toId: Types.ObjectId | undefined;
+
+  beforeEach(async () => {
+    await User.deleteMany({});
+    await api.post('/api/users').send(dummyUser);
+    await api.post('/api/users').send(dummyUser2);
+
+    const fromUser = await User.findOne({ username: dummyUser.username });
+    fromId = fromUser?._id;
+    const toUser = await User.findOne({ username: dummyUser2.username });
+    toId = toUser?._id;
+  });
+
+  test('friend request can be sent', async () => {
+    await api
+      .post(`/api/friendRequests`)
+      .send({ fromId: fromId?.toString(), toId: toId?.toString() })
+      .expect(201);
+
+    const updatedFromUser = await User.findById(fromId);
+    expect(updatedFromUser?.friendRequestsTo).toContainEqual(toId);
+
+    const updatedToUser = await User.findById(toId);
+    expect(updatedToUser?.friendRequestsFrom).toContainEqual(fromId);
+  });
+
+  describe('accept and reject', () => {
+    let friendRequestId: Types.ObjectId | undefined;
+
+    beforeEach(async () => {
+      await FriendRequest.deleteMany({});
+      await api
+        .post(`/api/friendRequests`)
+        .send({ fromId: fromId?.toString(), toId: toId?.toString() })
+        .expect(201);
+      const friendRequest = await FriendRequest.findOne({ fromId, toId });
+      friendRequestId = friendRequest?._id;
+    });
+
+    test('friend request can be accepted', async () => {
+      await api
+        .delete(`/api/friendRequests/${friendRequestId}`)
+        .send({ accept: true })
+        .expect(204);
+
+      const updatedFromUser = await User.findById(fromId);
+      expect(updatedFromUser?.friends).toContainEqual(toId);
+      expect(updatedFromUser?.friendRequestsTo).not.toContainEqual(toId);
+
+      const updatedToUser = await User.findById(toId);
+      expect(updatedToUser?.friends).toContainEqual(fromId);
+      expect(updatedToUser?.friendRequestsFrom).not.toContainEqual(fromId);
+    });
+
+    test('friend request can be rejected', async () => {
+      await api.delete(`/api/friendRequests/${friendRequestId}`).expect(204);
+
+      const updatedFromUser = await User.findById(fromId);
+      expect(updatedFromUser?.friendRequestsTo).not.toContainEqual(toId);
+
+      const updatedToUser = await User.findById(toId);
+      expect(updatedToUser?.friendRequestsFrom).not.toContainEqual(fromId);
     });
   });
 });

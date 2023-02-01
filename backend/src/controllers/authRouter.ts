@@ -6,14 +6,6 @@ import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-router.get('/login/status', async (req, res) => {
-  if (!req.user) {
-    return res.json({ loggedIn: false });
-  } else {
-    return res.json({ loggedIn: true, user: req.user });
-  }
-});
-
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -41,7 +33,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
   res.clearCookie('token');
-  res.send({ loggedOut: true });
+  res.json({ loggedOut: true });
 });
 
 export default router;

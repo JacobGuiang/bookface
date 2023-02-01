@@ -9,11 +9,7 @@ const LoginForm = () => {
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    try {
-      dispatch(loginUser(username, password));
-    } catch (err) {
-      console.log(err);
-    }
+    dispatch(loginUser(username, password));
   };
 
   return (
