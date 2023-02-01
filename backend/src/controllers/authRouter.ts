@@ -24,16 +24,29 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'invalid username or password' });
   }
 
-  const token = jwt.sign({ id: user._id }, config.JWT_SECRET_KEY, {
+  const userDetails = {
+    id: user._id,
+    username: user.username,
+    name: { ...user.name },
+  };
+
+  const token = jwt.sign(userDetails, config.JWT_SECRET_KEY, {
     expiresIn: 60 * 60 * 24,
   });
 
-  res.cookie('token', token, { httpOnly: true }).json(user);
+  res.cookie('token', token, { httpOnly: true }).json(userDetails);
 });
 
 router.post('/logout', async (req, res) => {
   res.clearCookie('token');
   res.json({ loggedOut: true });
+});
+
+router.get('/current', async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'not logged in' });
+  }
+  res.json(req.user);
 });
 
 export default router;

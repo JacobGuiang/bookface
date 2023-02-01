@@ -24,4 +24,6 @@ export interface FriendRequest {
 
 export interface Token {
   id: Types.ObjectId;
+  username: string;
+  name: name;
 }

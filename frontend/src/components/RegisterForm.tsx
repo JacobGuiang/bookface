@@ -1,19 +1,30 @@
 import { useState } from 'react';
-import { useAppDispatch } from '../hooks';
-import { registerUser } from '../reducers/userReducer';
+import { useMutation } from 'react-query';
+import userService from '../services/userService';
+import { logError } from '../utils/helpers';
 
-const RegisterModal = () => {
+const RegisterForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const dispatch = useAppDispatch();
+
+  const mutation = useMutation(userService.createUser, {
+    onError: (error) => {
+      logError(error);
+    },
+    onSuccess: () => {
+      console.log('registered');
+      setUsername('');
+      setPassword('');
+      setFirstName('');
+      setLastName('');
+    },
+  });
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
-    dispatch(
-      registerUser({ username, password, name: { firstName, lastName } })
-    );
+    mutation.mutate({ username, password, name: { firstName, lastName } });
   };
 
   return (
@@ -51,4 +62,4 @@ const RegisterModal = () => {
   );
 };
 
-export default RegisterModal;
+export default RegisterForm;

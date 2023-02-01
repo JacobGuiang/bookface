@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { FriendRequest } from '../../types/types';
+import { FriendRequest } from '../types/types';
 
 const schema = new mongoose.Schema<FriendRequest>({
   fromId: {

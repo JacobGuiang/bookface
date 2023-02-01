@@ -17,4 +17,11 @@ const logout = async () => {
   return response.data;
 };
 
-export default { login, logout };
+const getCurrentUser = async () => {
+  const response = await axios.get(`${baseUrl}/current`, {
+    withCredentials: true,
+  });
+  return response.data;
+};
+
+export default { login, logout, getCurrentUser };

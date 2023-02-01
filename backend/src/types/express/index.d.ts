@@ -1,7 +1,7 @@
-import { Types } from 'mongoose';
+import type { Token } from '../types';
 
 declare module 'express-serve-static-core' {
   interface Request {
-    user?: { id: Types.ObjectId };
+    user?: Token;
   }
 }
