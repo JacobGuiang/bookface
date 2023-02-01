@@ -8,9 +8,9 @@ interface BaseUser {
 
 export interface User extends BaseUser {
   id: string;
-  friends: [User];
-  friendRequestsFrom: [User];
-  friendRequestsTo: [User];
+  friends: User[];
+  friendRequestsFrom: User[];
+  friendRequestsTo: User[];
 }
 
 export interface NewUser extends BaseUser {

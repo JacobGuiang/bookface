@@ -2,6 +2,7 @@ import app from '../app';
 import request from 'supertest';
 import mongoose, { Types } from 'mongoose';
 import User from '../models/userModel';
+import FriendRequest from '../models/friendRequestModel';
 
 const api = request(app);
 
@@ -24,6 +25,15 @@ const dummyUser2 = {
   name: {
     firstName: 'Fizz',
     lastName: 'Buzz',
+  },
+};
+
+const dummyUser3 = {
+  username: 'leagueplayer',
+  password: 'Strong_Password3',
+  name: {
+    firstName: 'Lee',
+    lastName: 'Sin',
   },
 };
 
@@ -142,12 +152,49 @@ describe('friend requests', () => {
       .expect(201);
 
     const updatedFromUser = await User.findById(fromId);
-    let e = updatedFromUser?.friendRequestsTo.includes(toId as Types.ObjectId);
-    expect(e).toBe(true);
+    expect(updatedFromUser?.friendRequestsTo).toContainEqual(toId);
 
     const updatedToUser = await User.findById(toId);
-    e = updatedToUser?.friendRequestsFrom.includes(fromId as Types.ObjectId);
-    expect(e).toBe(true);
+    expect(updatedToUser?.friendRequestsFrom).toContainEqual(fromId);
+  });
+
+  describe('accept and reject', () => {
+    let friendRequestId: Types.ObjectId | undefined;
+
+    beforeEach(async () => {
+      await FriendRequest.deleteMany({});
+      await api
+        .post(`/api/friendRequests`)
+        .send({ fromId: fromId?.toString(), toId: toId?.toString() })
+        .expect(201);
+      const friendRequest = await FriendRequest.findOne({ fromId, toId });
+      friendRequestId = friendRequest?._id;
+    });
+
+    test('friend request can be accepted', async () => {
+      await api
+        .delete(`/api/friendRequests/${friendRequestId}`)
+        .send({ accept: true })
+        .expect(204);
+
+      const updatedFromUser = await User.findById(fromId);
+      expect(updatedFromUser?.friends).toContainEqual(toId);
+      expect(updatedFromUser?.friendRequestsTo).not.toContainEqual(toId);
+
+      const updatedToUser = await User.findById(toId);
+      expect(updatedToUser?.friends).toContainEqual(fromId);
+      expect(updatedToUser?.friendRequestsFrom).not.toContainEqual(fromId);
+    });
+
+    test('friend request can be rejected', async () => {
+      await api.delete(`/api/friendRequests/${friendRequestId}`).expect(204);
+
+      const updatedFromUser = await User.findById(fromId);
+      expect(updatedFromUser?.friendRequestsTo).not.toContainEqual(toId);
+
+      const updatedToUser = await User.findById(toId);
+      expect(updatedToUser?.friendRequestsFrom).not.toContainEqual(fromId);
+    });
   });
 });
 
