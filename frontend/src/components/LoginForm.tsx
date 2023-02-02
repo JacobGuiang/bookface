@@ -1,13 +1,12 @@
-import { useState, useContext, SyntheticEvent } from 'react';
-import { useMutation } from 'react-query';
+import { useState, SyntheticEvent } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
 import { logError } from '../utils/helpers';
 import authService from '../services/authService';
-import { CurrentUserContext } from '../App';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const currentUserContext = useContext(CurrentUserContext);
+  const queryClient = useQueryClient();
 
   const mutation = useMutation(authService.login, {
     onError: (error) => {
@@ -15,7 +14,7 @@ const LoginForm = () => {
     },
     onSuccess: (data) => {
       console.log('logging in');
-      currentUserContext.setCurrentUser(data);
+      queryClient.setQueryData('currentUser', data);
     },
   });
 

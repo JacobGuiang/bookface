@@ -14,8 +14,3 @@ export interface UserToRegister {
   name: Name;
   password: string;
 }
-
-export interface CurrentUserContextType {
-  currentUser: User | null;
-  setCurrentUser: (u: User | null) => void;
-}

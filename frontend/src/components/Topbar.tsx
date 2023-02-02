@@ -1,12 +1,12 @@
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useContext } from 'react';
 import { CurrentUserContext } from '../App';
 import authService from '../services/authService';
 import { logError } from '../utils/helpers';
 
 const Topbar = () => {
-  const currentUserContext = useContext(CurrentUserContext);
-  const user = currentUserContext.currentUser;
+  const currentUser = useContext(CurrentUserContext);
+  const queryClient = useQueryClient();
 
   const mutation = useMutation(authService.logout, {
     onError: (error) => {
@@ -14,13 +14,13 @@ const Topbar = () => {
     },
     onSuccess: () => {
       console.log('logging out');
-      currentUserContext.setCurrentUser(null);
+      queryClient.setQueryData('currentUser', null);
     },
   });
 
   return (
     <div>
-      <div>{user?.username}</div>
+      <div>{currentUser?.username}</div>
       <button onClick={() => mutation.mutate()}>logout</button>
     </div>
   );
