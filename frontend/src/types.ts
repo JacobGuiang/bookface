@@ -14,3 +14,11 @@ export interface UserToRegister {
   name: Name;
   password: string;
 }
+
+export interface UserIndexDetails {
+  id: string;
+  name: Name;
+  friendRequestsFrom: string[];
+  friendRequestsTo: string[];
+  friends: string[];
+}

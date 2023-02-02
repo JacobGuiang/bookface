@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from 'react-query';
 import { useContext } from 'react';
-import { CurrentUserContext } from '../App';
+import { Link, redirect } from 'react-router-dom';
+import { CurrentUserContext } from '../Home';
 import authService from '../services/authService';
 import { logError } from '../utils/helpers';
 
@@ -20,6 +21,17 @@ const Topbar = () => {
 
   return (
     <div>
+      <ul>
+        <li>
+          <Link to={'/'}>Home</Link>
+        </li>
+        <li>
+          <Link to={'/friends'}>Friends</Link>
+        </li>
+        <li>
+          <Link to={'/users'}>Users</Link>
+        </li>
+      </ul>
       <div>{currentUser?.username}</div>
       <button onClick={() => mutation.mutate()}>logout</button>
     </div>

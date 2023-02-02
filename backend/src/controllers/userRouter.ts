@@ -41,6 +41,14 @@ router.post('/', async (req, res) => {
   res.status(201).json(savedUser);
 });
 
+router.get('/index', async (_req, res) => {
+  const users = await User.find(
+    {},
+    'name friendRequestsFrom friendRequestsTo friends'
+  );
+  res.json(users);
+});
+
 router.get('/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
   res.json(user);

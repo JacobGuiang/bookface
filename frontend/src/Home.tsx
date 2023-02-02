@@ -6,10 +6,11 @@ import LoginPage from './components/LoginPage';
 import LoginService from './services/authService';
 import { User } from './types';
 import { logError } from './utils/helpers';
+import { Outlet, redirect } from 'react-router-dom';
 
 export const CurrentUserContext = createContext<User | null>(null);
 
-const App = (): ReactElement => {
+const Home = (): ReactElement => {
   const query = useQuery('currentUser', LoginService.getCurrentUser);
 
   if (query.isLoading) {
@@ -22,6 +23,7 @@ const App = (): ReactElement => {
   const currentUser = query.data;
 
   if (!currentUser) {
+    redirect('/');
     return <LoginPage />;
   }
 
@@ -29,8 +31,9 @@ const App = (): ReactElement => {
     <CurrentUserContext.Provider value={currentUser}>
       <Topbar />
       <Sidebar />
+      <Outlet />
     </CurrentUserContext.Provider>
   );
 };
 
-export default App;
+export default Home;

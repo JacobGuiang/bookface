@@ -21,7 +21,7 @@ const userExtractor: RequestHandler = (req, res, next) => {
 };
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
-  res.json({ error: `${err.name}: ${err.message}` });
+  res.status(400).json({ error: `${err.name}: ${err.message}` });
   next(err);
 };
 
