@@ -13,9 +13,25 @@ const getUserIndex = async () => {
   return response.data;
 };
 
+const getUserFriendsById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/${id}/friends`);
+  return response.data;
+};
+
+const getUserFriendRequestsById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/${id}/friends/requests`);
+  return response.data;
+};
+
 const createUser = async (user: UserToRegister) => {
   const response = await axios.post(baseUrl, user);
   return response.data;
 };
 
-export default { getUserById, getUserIndex, createUser };
+export default {
+  getUserById,
+  getUserIndex,
+  getUserFriendsById,
+  getUserFriendRequestsById,
+  createUser,
+};

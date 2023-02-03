@@ -62,4 +62,12 @@ router.get('/:id/friends', async (req, res) => {
   res.json(user);
 });
 
+router.get('/:id/friends/requests', async (req, res) => {
+  const user = await User.findById(
+    req.params.id,
+    'friendRequestsFrom'
+  ).populate('friendRequestsFrom', 'name');
+  res.json(user);
+});
+
 export default router;
