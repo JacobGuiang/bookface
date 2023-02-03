@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Home from './Home';
+import App from './App';
 import ErrorPage from './components/ErrorPage';
 import Users from './components/Users';
 import User from './components/User';
@@ -12,7 +12,7 @@ const queryClient = new QueryClient();
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Home />,
+    element: <App />,
     errorElement: <ErrorPage />,
     children: [
       {

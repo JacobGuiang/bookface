@@ -1,21 +1,14 @@
-import { useContext } from 'react';
 import { UserIndexDetails } from '../types';
-import { CurrentUserContext } from '../Home';
-import { useMutation } from 'react-query';
 import { Link } from 'react-router-dom';
+import UserIndexButton from './UserIndexButton';
 
 const UserIndex = ({ user }: { user: UserIndexDetails }) => {
-  const currentUser = useContext(CurrentUserContext);
-
-  // TODO
-
   return (
     <div>
-      <div>
-        <Link to={`/users/${user.id}`}>
-          {user.name.firstName} {user.name.lastName}{' '}
-        </Link>
-      </div>
+      <Link to={`/users/${user.id}`}>
+        {user.name.firstName} {user.name.lastName}
+      </Link>
+      <UserIndexButton user={user} />
     </div>
   );
 };

@@ -3,6 +3,11 @@ import { UserToRegister } from '../types';
 
 const baseUrl = '/api/users';
 
+const getUserById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/${id}`);
+  return response.data;
+};
+
 const getUserIndex = async () => {
   const response = await axios.get(`${baseUrl}/index`);
   return response.data;
@@ -13,4 +18,4 @@ const createUser = async (user: UserToRegister) => {
   return response.data;
 };
 
-export default { getUserIndex, createUser };
+export default { getUserById, getUserIndex, createUser };
