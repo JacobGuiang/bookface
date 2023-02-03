@@ -3,23 +3,18 @@ import { UserToRegister } from '../types';
 
 const baseUrl = '/api/users';
 
+const getAllUsers = async () => {
+  const response = await axios.get(baseUrl);
+  return response.data;
+};
+
 const getUserById = async (id: string) => {
   const response = await axios.get(`${baseUrl}/${id}`);
   return response.data;
 };
 
-const getUserIndex = async () => {
-  const response = await axios.get(`${baseUrl}/index`);
-  return response.data;
-};
-
 const getUserFriendsById = async (id: string) => {
   const response = await axios.get(`${baseUrl}/${id}/friends`);
-  return response.data;
-};
-
-const getUserFriendRequestsById = async (id: string) => {
-  const response = await axios.get(`${baseUrl}/${id}/friends/requests`);
   return response.data;
 };
 
@@ -29,9 +24,8 @@ const createUser = async (user: UserToRegister) => {
 };
 
 export default {
+  getAllUsers,
   getUserById,
-  getUserIndex,
   getUserFriendsById,
-  getUserFriendRequestsById,
   createUser,
 };

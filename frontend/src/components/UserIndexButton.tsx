@@ -1,12 +1,19 @@
 import { useContext } from 'react';
-import { useMutation, useQueryClient } from 'react-query';
-import { UserIndexDetails } from '../types';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { CurrentUserContext } from '../App';
 import friendRequestService from '../services/friendRequestService';
 import { logError } from '../utils/helpers';
+import userService from '../services/userService';
+import { User } from '../types';
 
-const UserIndexButton = ({ user }: { user: UserIndexDetails }) => {
+const UserIndexButton = ({ userId }: { userId: string }) => {
   const currentUser = useContext(CurrentUserContext);
+  const currentUserId = currentUser?.id as string;
+
+  const query = useQuery(['friends', currentUserId], () =>
+    userService.getUserFriendsById(currentUserId)
+  );
+
   const queryClient = useQueryClient();
 
   const sendMutation = useMutation(friendRequestService.sendRequest, {
@@ -15,7 +22,8 @@ const UserIndexButton = ({ user }: { user: UserIndexDetails }) => {
     },
     onSuccess: () => {
       console.log('sent request');
-      queryClient.invalidateQueries('users');
+      queryClient.invalidateQueries(['friends', currentUserId]);
+      queryClient.invalidateQueries(['friends', userId]);
     },
   });
   const acceptMutation = useMutation(friendRequestService.acceptRequest, {
@@ -24,7 +32,8 @@ const UserIndexButton = ({ user }: { user: UserIndexDetails }) => {
     },
     onSuccess: () => {
       console.log('accepted request');
-      queryClient.invalidateQueries('users');
+      queryClient.invalidateQueries(['friends', currentUserId]);
+      queryClient.invalidateQueries(['friends', userId]);
     },
   });
   const rejectMutation = useMutation(friendRequestService.rejectRequest, {
@@ -33,34 +42,44 @@ const UserIndexButton = ({ user }: { user: UserIndexDetails }) => {
     },
     onSuccess: () => {
       console.log('rejected request');
-      queryClient.invalidateQueries('users');
+      queryClient.invalidateQueries(['friends', currentUserId]);
+      queryClient.invalidateQueries(['friends', userId]);
     },
   });
 
-  const currentUserId = currentUser?.id as string;
+  if (query.isLoading) {
+    console.log('getting friends');
+    return null;
+  }
+  if (query.isError) {
+    logError(query.data);
+    return null;
+  }
+
+  const { data } = query;
 
   let buttonLabel;
   let handleClick: () => void;
-  if (user.friendRequestsTo.includes(currentUserId)) {
+  if (data.friendRequestsFrom.find((u: User) => u.id === userId)) {
     buttonLabel = 'Confirm request';
     handleClick = () =>
       acceptMutation.mutate({
-        fromId: user.id,
+        fromId: userId,
         toId: currentUserId,
       });
-  } else if (user.friendRequestsFrom.includes(currentUserId)) {
+  } else if (data.friendRequestsTo.find((u: User) => u.id === userId)) {
     buttonLabel = 'Cancel request';
     handleClick = () =>
       rejectMutation.mutate({
         fromId: currentUserId,
-        toId: user.id,
+        toId: userId,
       });
-  } else if (!user.friends.includes(currentUserId)) {
+  } else if (!data.friends.find((u: User) => u.id === userId)) {
     buttonLabel = 'Add friend';
     handleClick = () =>
       sendMutation.mutate({
         fromId: currentUserId,
-        toId: user.id,
+        toId: userId,
       });
   }
 

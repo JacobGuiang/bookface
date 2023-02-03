@@ -32,7 +32,9 @@ const Topbar = () => {
           <Link to="/users">Users</Link>
         </li>
       </ul>
-      <div>{currentUser?.username}</div>
+      <div>
+        {currentUser?.name.firstName} {currentUser?.name.lastName}
+      </div>
       <Link to="/">
         <button onClick={() => mutation.mutate()}>logout</button>
       </Link>

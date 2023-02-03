@@ -32,9 +32,11 @@ const Friends = () => {
   return (
     <div>
       {sortedFriends.map((user: User) => (
-        <Link to={`/users/${user.id}`} key={user.id}>
-          {user.name.firstName} {user.name.lastName}
-        </Link>
+        <div key={user.id}>
+          <Link to={`/users/${user.id}`}>
+            {user.name.firstName} {user.name.lastName}
+          </Link>
+        </div>
       ))}
     </div>
   );

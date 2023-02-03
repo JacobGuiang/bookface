@@ -5,6 +5,27 @@ import validator from 'validator';
 
 const router = express.Router();
 
+router.get('/', async (_req, res) => {
+  const users = await User.find({}, 'name');
+  res.json(users);
+});
+
+router.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  res.json(user);
+});
+
+router.get('/:id/friends', async (req, res) => {
+  const user = await User.findById(
+    req.params.id,
+    'friends friendRequestsFrom friendRequestsTo'
+  )
+    .populate('friends', 'name')
+    .populate('friendRequestsFrom', 'name')
+    .populate('friendRequestsTo', 'name');
+  res.json(user);
+});
+
 router.post('/', async (req, res) => {
   const { username, password, name } = req.body;
   const { firstName, lastName } = name;
@@ -39,35 +60,6 @@ router.post('/', async (req, res) => {
   const savedUser = await user.save();
 
   res.status(201).json(savedUser);
-});
-
-router.get('/index', async (_req, res) => {
-  const users = await User.find(
-    {},
-    'name friendRequestsFrom friendRequestsTo friends'
-  );
-  res.json(users);
-});
-
-router.get('/:id', async (req, res) => {
-  const user = await User.findById(req.params.id);
-  res.json(user);
-});
-
-router.get('/:id/friends', async (req, res) => {
-  const user = await User.findById(req.params.id, 'friends').populate(
-    'friends',
-    'name'
-  );
-  res.json(user);
-});
-
-router.get('/:id/friends/requests', async (req, res) => {
-  const user = await User.findById(
-    req.params.id,
-    'friendRequestsFrom'
-  ).populate('friendRequestsFrom', 'name');
-  res.json(user);
 });
 
 export default router;

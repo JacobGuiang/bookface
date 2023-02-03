@@ -1,14 +1,14 @@
 import { useQuery } from 'react-query';
 import userService from '../services/userService';
 import { logError } from '../utils/helpers';
-import { UserIndexDetails } from '../types';
-import UserIndex from './UserIndex';
+import { User } from '../types';
 import { CurrentUserContext } from '../App';
 import { useContext } from 'react';
+import UserIndex from './UserIndex';
 
 const Users = () => {
-  const query = useQuery('users', userService.getUserIndex);
   const currentUser = useContext(CurrentUserContext);
+  const query = useQuery('users', userService.getAllUsers);
 
   if (query.isLoading) {
     console.log('getting users');
@@ -24,7 +24,7 @@ const Users = () => {
       <div>People</div>
       <ul>
         {users
-          ?.map((user: UserIndexDetails) => {
+          ?.map((user: User) => {
             if (user.id !== currentUser?.id) {
               return (
                 <li key={user.id}>
