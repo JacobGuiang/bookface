@@ -12,9 +12,11 @@ const Users = () => {
 
   if (query.isLoading) {
     console.log('getting users');
+    return null;
   }
   if (query.isError) {
     logError(query.error);
+    return null;
   }
 
   const users = query.data;
@@ -24,7 +26,7 @@ const Users = () => {
       <div>People</div>
       <ul>
         {users
-          ?.map((user: User) => {
+          .map((user: User) => {
             if (user.id !== currentUser?.id) {
               return (
                 <li key={user.id}>

@@ -10,7 +10,7 @@ const Friends = () => {
   const currentUser = useContext(CurrentUserContext);
   const currentUserId = currentUser?.id as string;
 
-  const query = useQuery(['friends', currentUser?.id], () =>
+  const query = useQuery(['friends', currentUserId], () =>
     userService.getUserFriendsById(currentUserId)
   );
 
