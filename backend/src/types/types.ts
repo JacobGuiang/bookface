@@ -1,4 +1,4 @@
-import { Date, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 interface name {
   firstName: string;
@@ -14,16 +14,7 @@ export interface User {
   friendRequestsTo: Types.ObjectId[];
 }
 
-export interface FriendRequest {
-  fromId: Types.ObjectId;
-  toId: Types.ObjectId;
-  fromName: name;
-  toName: name;
-  date: Date;
-}
-
 export interface Token {
   id: Types.ObjectId;
-  username: string;
   name: name;
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 import User from '../models/userModel';
-import FriendRequest from '../models/friendRequestModel';
+import { Types } from 'mongoose';
 
 const router = express.Router();
 
@@ -16,70 +16,64 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: `invalid recipient id ${toUser}` });
   }
 
-  if (fromUser.friends.includes(toId)) {
+  const _fromId = new Types.ObjectId(fromId);
+  const _toId = new Types.ObjectId(toId);
+
+  if (fromUser.friends.includes(_toId)) {
     return res.status(400).json({ error: `users are already friends` });
   }
 
-  let friendRequest = await FriendRequest.findOne({ fromId, toId });
-
-  friendRequest =
-    friendRequest ||
-    (await FriendRequest.findOne({ fromId: toId, toId: fromId }));
-
-  if (friendRequest) {
+  if (
+    fromUser.friendRequestsTo.includes(_toId) ||
+    fromUser.friendRequestsFrom.includes(_toId)
+  ) {
     return res.status(400).json({
       error: `friend request already exists between users`,
     });
   }
 
-  fromUser.friendRequestsTo.push(toId);
+  fromUser.friendRequestsTo.push(_toId);
   await fromUser.save();
-  toUser.friendRequestsFrom.push(fromId);
+  toUser.friendRequestsFrom.push(_fromId);
   await toUser.save();
 
-  friendRequest = new FriendRequest({
-    fromId,
-    toId,
-    fromName: fromUser.name,
-    toName: toUser.name,
-  });
-  const savedFriendRequest = await friendRequest.save();
-
-  res.status(201).json(savedFriendRequest);
+  res.status(201).end();
 });
 
-router.delete('/:id', async (req, res) => {
-  const id = req.params.id;
-  const { accept } = req.body;
-
-  const friendRequest = await FriendRequest.findById(id);
-  if (!friendRequest) {
-    return res.json({ error: `invalid id ${id}` });
-  }
-
-  const { fromId, toId } = friendRequest;
+router.delete('/', async (req, res) => {
+  const { fromId, toId, accept } = req.body;
 
   const fromUser = await User.findById(fromId);
   const toUser = await User.findById(toId);
   if (!fromUser || !toUser) {
-    return res.json({ error: `invalid ids stored in friend request` });
+    return res.status(400).json({ error: 'invalid id' });
+  }
+
+  const _fromId = new Types.ObjectId(fromId);
+  const _toId = new Types.ObjectId(toId);
+
+  if (!fromUser.friendRequestsTo.includes(_toId)) {
+    const fromUserName = `${fromUser.name.firstName} ${fromUser.name.lastName}`;
+    const toUserName = `${toUser.name.firstName} ${toUser.name.lastName}`;
+    return res.status(400).json({
+      error: `friend request from ${fromUserName} to ${toUserName} does not exist`,
+    });
   }
 
   fromUser.friendRequestsTo = fromUser.friendRequestsTo.filter(
-    (_id) => !toId.equals(_id)
+    (_id) => !_toId.equals(_id)
   );
   toUser.friendRequestsFrom = toUser.friendRequestsFrom.filter(
-    (_id) => !fromId.equals(_id)
+    (_id) => !_fromId.equals(_id)
   );
 
   if (accept === true) {
-    fromUser.friends.push(toId);
-    toUser.friends.push(fromId);
+    fromUser.friends.push(_toId);
+    toUser.friends.push(_fromId);
   }
 
   await fromUser.save();
   await toUser.save();
-  await FriendRequest.findByIdAndDelete(id);
 
   res.status(204).end();
 });

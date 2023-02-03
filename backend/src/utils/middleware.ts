@@ -10,8 +10,8 @@ const userExtractor: RequestHandler = (req, res, next) => {
   }
   try {
     const decodedToken = jwt.verify(token, config.JWT_SECRET_KEY);
-    const { id, username, name } = decodedToken as Token;
-    req.user = { id, username, name };
+    const { id, name } = decodedToken as Token;
+    req.user = { id, name };
   } catch (err) {
     console.log('token error', err);
     res.clearCookie('token');
@@ -21,7 +21,7 @@ const userExtractor: RequestHandler = (req, res, next) => {
 };
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
-  res.json({ error: `${err.name}: ${err.message}` });
+  res.status(400).json({ error: `${err.name}: ${err.message}` });
   next(err);
 };
 

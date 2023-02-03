@@ -29,12 +29,12 @@ const schema = new mongoose.Schema<User>({
   },
   friendRequestsFrom: {
     type: [Schema.Types.ObjectId],
-    ref: 'FriendRequest',
+    ref: 'User',
     default: [],
   },
   friendRequestsTo: {
     type: [Schema.Types.ObjectId],
-    ref: 'FriendRequest',
+    ref: 'User',
     default: [],
   },
 });
