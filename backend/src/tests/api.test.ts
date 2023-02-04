@@ -129,7 +129,7 @@ describe('user', () => {
   });
 });
 
-describe('friend requests', () => {
+describe('friends', () => {
   let fromId: Types.ObjectId | undefined;
   let toId: Types.ObjectId | undefined;
 
@@ -229,6 +229,22 @@ describe('friend requests', () => {
           toId: userId,
         })
         .expect(400);
+    });
+
+    test('user can unfriend another user', async () => {
+      await api
+        .delete('/api/friendRequests')
+        .send({
+          fromId: fromId?.toString(),
+          toId: toId,
+          accept: true,
+        })
+        .expect(204);
+
+      await api.delete(`/api/users/${fromId}/friends/${toId}`).expect(204);
+
+      const user = await User.findById(fromId);
+      expect(user?.friends).not.toContainEqual(toId);
     });
   });
 });

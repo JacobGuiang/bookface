@@ -53,10 +53,10 @@ router.delete('/', async (req, res) => {
   const _toId = new Types.ObjectId(toId);
 
   if (!fromUser.friendRequestsTo.includes(_toId)) {
-    const fromUserName = `${fromUser.name.firstName} ${fromUser.name.lastName}`;
-    const toUserName = `${toUser.name.firstName} ${toUser.name.lastName}`;
+    const fromName = `${fromUser.name.firstName} ${fromUser.name.lastName}`;
+    const toName = `${toUser.name.firstName} ${toUser.name.lastName}`;
     return res.status(400).json({
-      error: `friend request from ${fromUserName} to ${toUserName} does not exist`,
+      error: `friend request from ${fromName} to ${toName} does not exist`,
     });
   }
 

@@ -1,17 +1,16 @@
 import { useContext } from 'react';
-import { useQuery } from 'react-query';
 import { CurrentUserContext } from '../App';
-import userService from '../services/userService';
-import { logError } from '../utils/helpers';
-import { User } from '../types';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { User } from '../types';
+import userService from '../services/user';
+import { logError } from '../utils/helpers';
 
 const Friends = () => {
-  const currentUser = useContext(CurrentUserContext);
-  const currentUserId = currentUser?.id as string;
+  const currentUser = useContext(CurrentUserContext) as User;
 
-  const query = useQuery(['friends', currentUserId], () =>
-    userService.getUserFriendsById(currentUserId)
+  const query = useQuery(['friends', currentUser.id], () =>
+    userService.getUserFriendsById(currentUser.id)
   );
 
   if (query.isLoading) {
@@ -25,9 +24,17 @@ const Friends = () => {
 
   const { friends } = query.data;
 
-  const sortedFriends = friends.sort((a: User, b: User) =>
-    a.name.firstName.localeCompare(b.name.firstName)
-  );
+  const sortedFriends = friends.sort((a: User, b: User) => {
+    const aFullName = `${a.name.firstName} ${a.name.lastName}`;
+    const bFullName = `${b.name.firstName} ${b.name.lastName}`;
+    if (aFullName < bFullName) {
+      return -1;
+    }
+    if (aFullName > bFullName) {
+      return 1;
+    }
+    return 0;
+  });
 
   return (
     <div>

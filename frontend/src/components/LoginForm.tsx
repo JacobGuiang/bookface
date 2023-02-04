@@ -1,7 +1,7 @@
 import { useState, SyntheticEvent } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
+import authService from '../services/auth';
 import { logError } from '../utils/helpers';
-import authService from '../services/authService';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');

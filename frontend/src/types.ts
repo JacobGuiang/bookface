@@ -1,4 +1,4 @@
-interface Name {
+export interface Name {
   firstName: string;
   lastName: string;
 }
@@ -8,8 +8,8 @@ export interface User {
   name: Name;
 }
 
-export interface UserToRegister {
-  username: string;
-  password: string;
-  name: Name;
+export interface FriendData {
+  friends: User[];
+  friendRequestsFrom: User[];
+  friendRequestsTo: User[];
 }

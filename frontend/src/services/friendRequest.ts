@@ -1,11 +1,11 @@
 import axios from 'axios';
 
+const baseUrl = '/api/friendRequests';
+
 interface Users {
   fromId: string;
   toId: string;
 }
-
-const baseUrl = '/api/friendRequests';
 
 const sendRequest = async (users: Users) => {
   const response = await axios.post(baseUrl, users);
