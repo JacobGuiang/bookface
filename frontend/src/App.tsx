@@ -1,33 +1,33 @@
 import { createContext } from 'react';
 import { useQuery } from 'react-query';
-import Topbar from './components/Topbar';
-import LoginPage from './components/LoginPage';
-import loginService from './services/authService';
-import { User } from './types';
-import { logError } from './utils/helpers';
 import { Outlet } from 'react-router-dom';
+import { User } from './types';
+import loginService from './services/auth';
+import Header from './components/Header';
+import Login from './components/Login';
+import { logError } from './utils/helpers';
 
 export const CurrentUserContext = createContext<User | null>(null);
 
 const App = () => {
-  const query = useQuery('currentUser', loginService.getCurrentUser);
+  const query = useQuery('currentUser', loginService.getCurrentUser, {
+    retry: false,
+  });
 
   if (query.isLoading) {
     console.log('getting current user');
+    return <Login />;
   }
   if (query.isError) {
     logError(query.error);
+    return <Login />;
   }
 
   const currentUser = query.data;
 
-  if (!currentUser) {
-    return <LoginPage />;
-  }
-
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Topbar />
+      <Header />
       <Outlet />
     </CurrentUserContext.Provider>
   );

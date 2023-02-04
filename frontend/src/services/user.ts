@@ -1,7 +1,18 @@
 import axios from 'axios';
-import { UserToRegister } from '../types';
+import { Name } from '../types';
 
 const baseUrl = '/api/users';
+
+interface UserToRegister {
+  username: string;
+  password: string;
+  name: Name;
+}
+
+interface UnfriendUsers {
+  userIdA: string;
+  userIdB: string;
+}
 
 const getAllUsers = async () => {
   const response = await axios.get(baseUrl);
@@ -23,9 +34,18 @@ const createUser = async (user: UserToRegister) => {
   return response.data;
 };
 
+const unfriendUsers = async (users: UnfriendUsers) => {
+  const { userIdA, userIdB } = users;
+  const response = await axios.delete(
+    `${baseUrl}/${userIdA}/friends/${userIdB}`
+  );
+  return response.data;
+};
+
 export default {
   getAllUsers,
   getUserById,
   getUserFriendsById,
   createUser,
+  unfriendUsers,
 };

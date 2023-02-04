@@ -39,7 +39,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', async (req, res) => {
   res.clearCookie('token');
-  res.json({ loggedOut: true });
+  res.end();
 });
 
 router.get('/current', async (req, res) => {

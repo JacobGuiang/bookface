@@ -26,6 +26,23 @@ router.get('/:id/friends', async (req, res) => {
   res.json(user);
 });
 
+router.delete('/:userId/friends/:friendId', async (req, res) => {
+  const user = await User.findById(req.params.userId);
+  const friend = await User.findById(req.params.friendId);
+
+  if (!user || !friend) {
+    return res.status(400).json({ error: 'invalid ids' });
+  }
+
+  user.friends = user.friends.filter((_id) => !_id.equals(friend._id));
+  friend.friends = friend.friends.filter((_id) => !_id.equals(user._id));
+
+  await user.save();
+  await friend.save();
+
+  res.status(204).end();
+});
+
 router.post('/', async (req, res) => {
   const { username, password, name } = req.body;
   const { firstName, lastName } = name;

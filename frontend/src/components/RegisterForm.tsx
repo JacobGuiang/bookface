@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from 'react-query';
-import userService from '../services/userService';
+import userService from '../services/user';
 import { logError } from '../utils/helpers';
 
 const RegisterForm = () => {

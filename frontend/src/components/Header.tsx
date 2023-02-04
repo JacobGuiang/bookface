@@ -1,12 +1,13 @@
-import { useMutation, useQueryClient } from 'react-query';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
 import { CurrentUserContext } from '../App';
-import authService from '../services/authService';
+import { useMutation, useQueryClient } from 'react-query';
+import { Link } from 'react-router-dom';
+import { User } from '../types';
+import authService from '../services/auth';
 import { logError } from '../utils/helpers';
 
-const Topbar = () => {
-  const currentUser = useContext(CurrentUserContext);
+const Header = () => {
+  const currentUser = useContext(CurrentUserContext) as User;
   const queryClient = useQueryClient();
 
   const mutation = useMutation(authService.logout, {
@@ -15,7 +16,7 @@ const Topbar = () => {
     },
     onSuccess: () => {
       console.log('logging out');
-      queryClient.setQueryData('currentUser', null);
+      queryClient.invalidateQueries('currentUser');
     },
   });
 
@@ -33,7 +34,7 @@ const Topbar = () => {
         </li>
       </ul>
       <div>
-        {currentUser?.name.firstName} {currentUser?.name.lastName}
+        {currentUser.name.firstName} {currentUser.name.lastName}
       </div>
       <Link to="/">
         <button onClick={() => mutation.mutate()}>logout</button>
@@ -42,4 +43,4 @@ const Topbar = () => {
   );
 };
 
-export default Topbar;
+export default Header;

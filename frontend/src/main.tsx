@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import ErrorPage from './components/ErrorPage';
-import Users from './components/Users';
-import User from './components/User';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import FriendSidebar from './components/FriendSidebar';
+import Error from './components/Error';
+import UserIndex from './components/UserIndex';
+import UserPage from './components/UserPage';
+import FriendNavbar from './components/FriendNavbar';
 import Friends from './components/Friends';
 import FriendRequests from './components/FriendRequests';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
@@ -16,31 +16,31 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <ErrorPage />,
+    errorElement: <Error />,
     children: [
       {
         path: 'users',
-        element: <Users />,
+        element: <UserIndex />,
       },
       {
         path: 'users/:id',
-        element: <User />,
+        element: <UserPage />,
       },
       {
         path: 'friends',
         element: (
           <>
-            <FriendSidebar />
-            <FriendRequests />
+            <FriendNavbar />
+            <Friends />
           </>
         ),
       },
       {
-        path: 'friends/list',
+        path: 'friends/requests',
         element: (
           <>
-            <FriendSidebar />
-            <Friends />
+            <FriendNavbar />
+            <FriendRequests />
           </>
         ),
       },
