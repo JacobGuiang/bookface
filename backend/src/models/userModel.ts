@@ -37,6 +37,11 @@ const schema = new mongoose.Schema<User>({
     ref: 'User',
     default: [],
   },
+  posts: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Post',
+    default: [],
+  },
 });
 
 schema.set('toJSON', {

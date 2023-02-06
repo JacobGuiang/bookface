@@ -15,7 +15,7 @@ const UnfriendButton = ({ userId }: { userId: string }) => {
       logError(error);
     },
     onSuccess: () => {
-      console.log('accepted request');
+      console.log('removed friend');
       queryClient.invalidateQueries(['friends', currentUser.id]);
       queryClient.invalidateQueries(['friends', userId]);
     },
