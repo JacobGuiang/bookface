@@ -14,12 +14,10 @@ const schema = new mongoose.Schema<User>({
     firstName: {
       type: String,
       required: true,
-      lowercase: true,
     },
     lastName: {
       type: String,
       required: true,
-      lowercase: true,
     },
   },
   friends: {

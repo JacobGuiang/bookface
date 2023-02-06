@@ -12,7 +12,7 @@ afterAll(() => {
 });
 
 const dummyUser = {
-  username: 'admin_root.user',
+  username: 'admin',
   password: 'Strong_Password1',
   name: {
     firstName: 'Admin',
@@ -69,7 +69,7 @@ describe('user', () => {
 
         await api
           .post('/api/users')
-          .send({ ...dummyUser, username: '!@#$%^&*()+' })
+          .send({ ...dummyUser, username: '!@#$%^&*()_+' })
           .expect(400);
       });
 
@@ -112,10 +112,14 @@ describe('user', () => {
       test('username is not unique', async () => {
         await api.post('/api/users').send(dummyUser);
 
+        const username =
+          dummyUser.username.charAt(0).toUpperCase() +
+          dummyUser.username.slice(1);
+
         await api
           .post('/api/users')
           .send({
-            username: dummyUser.username,
+            username,
             password: 'Str0ng_Password',
             name: {
               firstName: 'First',
