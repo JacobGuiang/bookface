@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
     });
   }
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username: username.toLowerCase() });
   const passwordCorrect = user
     ? await bcrypt.compare(password, user.passwordHash)
     : false;
@@ -26,7 +26,6 @@ router.post('/login', async (req, res) => {
 
   const userDetails = {
     id: user._id,
-    username: user.username,
     name: { ...user.name },
   };
 

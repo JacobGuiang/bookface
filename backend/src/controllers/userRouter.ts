@@ -44,18 +44,24 @@ router.delete('/:userId/friends/:friendId', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  const { username, password, name } = req.body;
+  let { username } = req.body;
+  const { name, password } = req.body;
   const { firstName, lastName } = name;
+
+  username = username.toLowerCase();
+  name.firstName =
+    firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  name.lastName =
+    lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
 
   if (!username || !password || !firstName || !lastName) {
     return res.status(400).json({
       error: 'missing username, password, first name, or last name',
     });
   }
-  if (!validator.isAlphanumeric(username, undefined, { ignore: '_.' })) {
+  if (!validator.isAlphanumeric(username)) {
     return res.status(400).json({
-      error:
-        'username can only contain letters, underscores (_), and periods (.)',
+      error: 'username can only contain letters and numbers',
     });
   }
   if (!validator.isAlpha(firstName) || !validator.isAlpha(lastName)) {

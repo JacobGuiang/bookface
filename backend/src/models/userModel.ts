@@ -14,12 +14,10 @@ const schema = new mongoose.Schema<User>({
     firstName: {
       type: String,
       required: true,
-      lowercase: true,
     },
     lastName: {
       type: String,
       required: true,
-      lowercase: true,
     },
   },
   friends: {
@@ -35,6 +33,11 @@ const schema = new mongoose.Schema<User>({
   friendRequestsTo: {
     type: [Schema.Types.ObjectId],
     ref: 'User',
+    default: [],
+  },
+  posts: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Post',
     default: [],
   },
 });

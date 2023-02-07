@@ -2,6 +2,8 @@ import app from '../app';
 import request from 'supertest';
 import mongoose, { Types } from 'mongoose';
 import User from '../models/userModel';
+import Post from '../models/postModel';
+import Comment from '../models/commentModel';
 
 const api = request(app);
 
@@ -10,7 +12,7 @@ afterAll(() => {
 });
 
 const dummyUser = {
-  username: 'admin_root.user',
+  username: 'admin',
   password: 'Strong_Password1',
   name: {
     firstName: 'Admin',
@@ -67,7 +69,7 @@ describe('user', () => {
 
         await api
           .post('/api/users')
-          .send({ ...dummyUser, username: '!@#$%^&*()+' })
+          .send({ ...dummyUser, username: '!@#$%^&*()_+' })
           .expect(400);
       });
 
@@ -110,10 +112,14 @@ describe('user', () => {
       test('username is not unique', async () => {
         await api.post('/api/users').send(dummyUser);
 
+        const username =
+          dummyUser.username.charAt(0).toUpperCase() +
+          dummyUser.username.slice(1);
+
         await api
           .post('/api/users')
           .send({
-            username: dummyUser.username,
+            username,
             password: 'Str0ng_Password',
             name: {
               firstName: 'First',
@@ -145,10 +151,7 @@ describe('friends', () => {
   });
 
   test('friend request can be sent', async () => {
-    await api
-      .post('/api/friendRequests')
-      .send({ fromId: fromId?.toString(), toId: toId?.toString() })
-      .expect(201);
+    await api.post('/api/friendRequests').send({ fromId, toId }).expect(201);
 
     const updatedFromUser = await User.findById(fromId);
     expect(updatedFromUser?.friendRequestsTo).toContainEqual(toId);
@@ -292,5 +295,161 @@ describe('login', () => {
         .send({ username: dummyCreds.username, password: 'wrongpassword' })
         .expect(400);
     });
+  });
+});
+
+describe('posts', () => {
+  let userId: Types.ObjectId | undefined;
+
+  beforeAll(async () => {
+    await User.deleteMany({});
+    await api.post('/api/users').send(dummyUser);
+    const user = await User.findOne({ username: dummyUser.username });
+    userId = user?._id;
+  });
+
+  describe('create and delete', () => {
+    beforeEach(async () => {
+      await Post.deleteMany({});
+    });
+
+    test('post can be created', async () => {
+      await api
+        .post('/api/posts')
+        .send({
+          content: {
+            text: 'test post',
+          },
+          author: userId,
+        })
+        .expect(201);
+
+      const foundPost = await Post.findOne({ author: userId });
+      expect(foundPost).not.toBeNull();
+
+      const updatedUser = await User.findById(userId);
+      expect(updatedUser?.posts).toContainEqual(foundPost?._id);
+    });
+
+    test('post can be deleted', async () => {
+      await api.post('/api/posts').send({
+        content: {
+          text: 'test post',
+        },
+        author: userId,
+      });
+
+      let foundPost = await Post.findOne({ author: userId });
+
+      await api
+        .post('/api/comments')
+        .send({ postId: foundPost?.id, content: 'test comment', userId });
+
+      await api.delete(`/api/posts/${foundPost?.id}`).expect(204);
+
+      const updatedUser = await User.findById(userId);
+      expect(updatedUser?.posts).not.toContainEqual(foundPost?._id);
+
+      foundPost = await Post.findById(foundPost?.id);
+      expect(foundPost).toBeNull();
+
+      const foundComment = await Comment.findOne({ author: userId });
+      expect(foundComment).toBeNull();
+    });
+  });
+
+  describe('like and unlike', () => {
+    let postId: string;
+
+    beforeEach(async () => {
+      await Post.deleteMany({});
+      await api.post('/api/posts').send({
+        content: {
+          text: 'test post',
+        },
+        author: userId,
+      });
+      const post = await Post.findOne({ author: userId });
+      postId = post?.id;
+    });
+
+    test('post can be liked', async () => {
+      await api
+        .post(`/api/posts/${postId}/likes`)
+        .send({ userId: userId, action: 'like' })
+        .expect(200);
+
+      const post = await Post.findById(postId);
+      expect(post?.likes).toHaveLength(1);
+      expect(post?.likes).toContainEqual(userId);
+    });
+
+    test('post can be unliked', async () => {
+      await api
+        .post(`/api/posts/${postId}/likes`)
+        .send({ userId, action: 'like' });
+      await api
+        .post(`/api/posts/${postId}/likes`)
+        .send({ userId, action: 'unlike' })
+        .expect(200);
+
+      const post = await Post.findById(postId);
+      expect(post?.likes).toHaveLength(0);
+      expect(post?.likes).not.toContainEqual(userId);
+    });
+  });
+});
+
+describe('comments', () => {
+  let postId: Types.ObjectId | undefined;
+  let userId: Types.ObjectId | undefined;
+
+  beforeAll(async () => {
+    await User.deleteMany({});
+    await Post.deleteMany({});
+
+    await api.post('/api/users').send(dummyUser);
+    const user = await User.findOne({ username: dummyUser.username });
+    userId = user?._id;
+
+    await api.post('/api/posts').send({
+      content: {
+        text: 'test post',
+      },
+      author: userId,
+    });
+    const post = await Post.findOne({ author: userId });
+    postId = post?._id;
+  });
+
+  beforeEach(async () => {
+    await Comment.deleteMany({});
+  });
+
+  test('comment can be created', async () => {
+    await api
+      .post('/api/comments')
+      .send({ postId, content: 'test comment', userId });
+
+    const foundComment = await Comment.findOne({ author: userId });
+    expect(foundComment).not.toBeNull();
+
+    const post = await Post.findById(postId);
+    expect(post?.comments).toContainEqual(foundComment?._id);
+  });
+
+  test('comment can be deleted', async () => {
+    await api
+      .post('/api/comments')
+      .send({ postId, content: 'test comment', userId });
+    let foundComment = await Comment.findOne({ author: userId });
+
+    await api.delete(`/api/comments/${foundComment?.id}`).expect(204);
+
+    const post = await Post.findById(postId);
+    expect(post?.comments).not.toContainEqual(foundComment?._id);
+
+    foundComment = await Comment.findById(foundComment?.id);
+    expect(foundComment).toBeNull();
   });
 });
