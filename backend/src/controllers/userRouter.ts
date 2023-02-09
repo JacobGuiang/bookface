@@ -26,6 +26,26 @@ router.get('/:id/friends', async (req, res) => {
   res.json(user);
 });
 
+router.get('/:id/posts', async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findById(userId).populate('posts', '-author');
+
+  if (!user) {
+    return res.status(400).json({ error: `invalid user id: ${userId}` });
+  }
+
+  res.json(user.posts);
+});
+
+router.get('/:id/feed', async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(400).json({ error: `invalid user id: ${userId}` });
+  }
+});
+
 router.delete('/:userId/friends/:friendId', async (req, res) => {
   const user = await User.findById(req.params.userId);
   const friend = await User.findById(req.params.friendId);
