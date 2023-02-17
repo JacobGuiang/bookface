@@ -20,7 +20,7 @@ const LoginForm = () => {
 
   const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
-    mutation.mutate({ username, password });
+    mutation.mutate({ username: username.toLowerCase(), password });
   };
 
   return (

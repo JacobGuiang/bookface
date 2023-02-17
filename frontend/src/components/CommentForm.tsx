@@ -2,31 +2,30 @@ import { useState, useContext } from 'react';
 import { CurrentUserContext } from '../App';
 import { useMutation, useQueryClient } from 'react-query';
 import { User } from '../types';
-import postService from '../services/post';
+import commentService from '../services/comment';
 import { logError } from '../utils/helpers';
 
-const PostForm = ({ placeholder }: { placeholder: string }) => {
+const CommentForm = ({ postId }: { postId: string }) => {
   const currentUser = useContext(CurrentUserContext) as User;
   const queryClient = useQueryClient();
   const [text, setText] = useState('');
-  const mutation = useMutation(postService.createPost, {
+  const mutation = useMutation(commentService.createComment, {
     onError: (error) => {
       logError(error);
     },
     onSuccess: () => {
-      console.log('created post');
+      console.log('created comment');
       setText('');
-      queryClient.invalidateQueries(['feed', currentUser.id]);
+      queryClient.invalidateQueries(['post', postId]);
     },
   });
 
   const handleSubmit = (event: React.SyntheticEvent) => {
     event.preventDefault();
     mutation.mutate({
-      content: {
-        text: text,
-      },
-      author: currentUser.id,
+      postId: postId,
+      content: text,
+      userId: currentUser.id,
     });
   };
 
@@ -34,7 +33,7 @@ const PostForm = ({ placeholder }: { placeholder: string }) => {
     <form onSubmit={handleSubmit}>
       <div>
         <input
-          placeholder={placeholder}
+          placeholder="Write a comment..."
           value={text}
           onChange={({ target }) => setText(target.value)}
         />
@@ -43,4 +42,4 @@ const PostForm = ({ placeholder }: { placeholder: string }) => {
   );
 };
 
-export default PostForm;
+export default CommentForm;

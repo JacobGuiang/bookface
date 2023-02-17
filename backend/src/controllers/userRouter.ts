@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/userModel';
+import Post from '../models/postModel';
 import validator from 'validator';
 
 const router = express.Router();
@@ -44,6 +45,15 @@ router.get('/:id/feed', async (req, res) => {
   if (!user) {
     return res.status(400).json({ error: `invalid user id: ${userId}` });
   }
+
+  const posts = await Post.find({
+    author: { $in: [...user.friends, userId] },
+  })
+    .limit(100)
+    .sort({ date: -1 })
+    .populate('author', 'name');
+
+  res.json(posts);
 });
 
 router.delete('/:userId/friends/:friendId', async (req, res) => {

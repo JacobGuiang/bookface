@@ -9,6 +9,11 @@ interface Post {
   author: string;
 }
 
+const getPostById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/${id}`);
+  return response.data;
+};
+
 const createPost = async (post: Post) => {
   const response = await axios.post(baseUrl, { ...post });
   return response.data;
@@ -19,4 +24,4 @@ const deletePostById = async (id: string) => {
   return response.data;
 };
 
-export default { createPost, deletePostById };
+export default { getPostById, createPost, deletePostById };

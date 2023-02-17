@@ -29,6 +29,11 @@ const getUserFriendsById = async (id: string) => {
   return response.data;
 };
 
+const getUserFeedById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/${id}/feed`);
+  return response.data;
+};
+
 const createUser = async (user: UserToRegister) => {
   const response = await axios.post(baseUrl, user);
   return response.data;
@@ -46,6 +51,7 @@ export default {
   getAllUsers,
   getUserById,
   getUserFriendsById,
+  getUserFeedById,
   createUser,
   unfriendUsers,
 };

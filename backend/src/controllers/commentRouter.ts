@@ -21,6 +21,17 @@ router.post('/', async (req, res) => {
   res.status(201).json(savedComment);
 });
 
+router.get('/:id', async (req, res) => {
+  const commentId = req.params.id;
+  const comment = await Comment.findById(commentId).populate('author', 'name');
+
+  if (!comment) {
+    return res.status(400).json({ error: `invalid comment id: ${commentId}` });
+  }
+
+  res.json(comment);
+});
+
 router.delete('/:id', async (req, res) => {
   const commentId = req.params.id;
   const deletedComment = await Comment.findByIdAndDelete(commentId);
