@@ -3,9 +3,11 @@ import { CurrentUserContext } from '../App';
 import { useQuery } from 'react-query';
 import { User } from '../types';
 import postService from '../services/post';
+import LikePostButton from './LikePostButton';
+import UnlikePostButton from './UnlikePostButton';
 import Comment from './Comment';
-import DeletePostButton from './DeletePostButton';
 import CommentForm from './CommentForm';
+import DeletePostButton from './DeletePostButton';
 import { logError } from '../utils/helpers';
 
 const Post = ({ postId }: { postId: string }) => {
@@ -44,6 +46,11 @@ const Post = ({ postId }: { postId: string }) => {
         {post.comments.length}{' '}
         {post.comments.length === 1 ? 'comment' : 'comments'}
       </div>
+      {!post.likes.includes(currentUser.id) ? (
+        <LikePostButton postId={postId} />
+      ) : (
+        <UnlikePostButton postId={postId} />
+      )}
       {post.comments
         .map((id: string) => (
           <Comment
