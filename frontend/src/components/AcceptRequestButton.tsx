@@ -24,7 +24,7 @@ const AcceptRequestButton = (props: Props) => {
     onSuccess: () => {
       console.log('accepted request');
       queryClient.invalidateQueries(['friends', currentUser.id]);
-      queryClient.invalidateQueries(['friends', fromId]);
+      // queryClient.invalidateQueries(['friends', fromId]);
     },
   });
 

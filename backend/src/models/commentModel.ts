@@ -19,7 +19,7 @@ const schema = new mongoose.Schema<Comment>({
   date: {
     type: Date,
     required: true,
-    default: Date.now(),
+    default: Date.now,
   },
 });
 

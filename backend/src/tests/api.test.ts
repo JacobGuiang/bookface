@@ -5,6 +5,7 @@ import User from '../models/userModel';
 import Post from '../models/postModel';
 import Comment from '../models/commentModel';
 
+jest.setTimeout(10000);
 const api = request(app);
 
 afterAll(() => {

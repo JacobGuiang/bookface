@@ -23,6 +23,17 @@ router.post('/', async (req, res) => {
   res.status(201).json(postToReturn);
 });
 
+router.get('/:id', async (req, res) => {
+  const postId = req.params.id;
+  const post = await Post.findById(postId).populate('author', 'name');
+
+  if (!post) {
+    return res.status(400).json({ error: `invalid post id: ${postId}` });
+  }
+
+  res.json(post);
+});
+
 router.delete('/:id', async (req, res) => {
   const postId = req.params.id;
   const deletedPost = await Post.findByIdAndDelete(postId);

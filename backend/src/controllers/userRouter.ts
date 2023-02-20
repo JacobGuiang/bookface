@@ -1,6 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
 import User from '../models/userModel';
+import Post from '../models/postModel';
 import validator from 'validator';
 
 const router = express.Router();
@@ -24,6 +25,35 @@ router.get('/:id/friends', async (req, res) => {
     .populate('friendRequestsFrom', 'name')
     .populate('friendRequestsTo', 'name');
   res.json(user);
+});
+
+router.get('/:id/posts', async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findById(userId).populate('posts', '-author');
+
+  if (!user) {
+    return res.status(400).json({ error: `invalid user id: ${userId}` });
+  }
+
+  res.json(user.posts);
+});
+
+router.get('/:id/feed', async (req, res) => {
+  const userId = req.params.id;
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(400).json({ error: `invalid user id: ${userId}` });
+  }
+
+  const posts = await Post.find({
+    author: { $in: [...user.friends, userId] },
+  })
+    .limit(100)
+    .sort({ date: -1 })
+    .populate('author', 'name');
+
+  res.json(posts);
 });
 
 router.delete('/:userId/friends/:friendId', async (req, res) => {

@@ -7,6 +7,7 @@ import UserPage from './components/UserPage';
 import FriendNavbar from './components/FriendNavbar';
 import Friends from './components/Friends';
 import FriendRequests from './components/FriendRequests';
+import Feed from './components/Feed';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <Error />,
     children: [
+      {
+        path: '',
+        element: <Feed />,
+      },
       {
         path: 'users',
         element: <UserIndex />,
