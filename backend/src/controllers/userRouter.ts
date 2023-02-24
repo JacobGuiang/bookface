@@ -16,6 +16,11 @@ router.get('/:id', async (req, res) => {
   res.json(user);
 });
 
+router.get('/:id/cover', async (req, res) => {
+  const user = await User.findById(req.params.id, 'name');
+  res.json(user);
+});
+
 router.get('/:id/friends', async (req, res) => {
   const user = await User.findById(
     req.params.id,

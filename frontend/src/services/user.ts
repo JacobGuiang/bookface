@@ -24,6 +24,11 @@ const getUserById = async (id: string) => {
   return response.data;
 };
 
+const getUserCoverById = async (id: string) => {
+  const response = await axios.get(`${baseUrl}/${id}/cover`);
+  return response.data;
+};
+
 const getUserFriendsById = async (id: string) => {
   const response = await axios.get(`${baseUrl}/${id}/friends`);
   return response.data;
@@ -50,6 +55,7 @@ const unfriendUsers = async (users: UnfriendUsers) => {
 export default {
   getAllUsers,
   getUserById,
+  getUserCoverById,
   getUserFriendsById,
   getUserFeedById,
   createUser,

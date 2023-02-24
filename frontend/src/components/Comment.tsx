@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { CurrentUserContext } from '../App';
 import { useQuery } from 'react-query';
 import { User } from '../types';
+import { Link } from 'react-router-dom';
 import commentService from '../services/comment';
 import DeleteCommentButton from './DeleteCommentButton';
 import { logError } from '../utils/helpers';
@@ -34,9 +35,9 @@ const Comment = (props: Props) => {
 
   return (
     <div style={style}>
-      <div>
+      <Link to={`users/${author.id}`}>
         {author.name.firstName} {author.name.lastName}
-      </div>
+      </Link>
       <div>{content}</div>
       <div>{date}</div>
       {(showDelete === true || author.id === currentUser.id) && (

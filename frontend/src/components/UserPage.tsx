@@ -10,15 +10,16 @@ import RejectRequestButton from './RejectRequestButton';
 import CancelRequestButton from './CancelRequestButton';
 import SendRequestButton from './SendRequestButton';
 import UnfriendButton from './UnfriendButton';
+import Post from './Post';
 import { logError } from '../utils/helpers';
 
-interface Props {
+interface FriendStatusProps {
   userId: string;
   userFirstName: string;
   friendData: FriendData;
 }
 
-const FriendStatus = (props: Props) => {
+const FriendStatus = (props: FriendStatusProps) => {
   const { userId, userFirstName, friendData } = props;
   const { friendRequestsFrom, friendRequestsTo, friends } = friendData;
 
@@ -37,6 +38,29 @@ const FriendStatus = (props: Props) => {
   } else {
     return <UnfriendButton userId={userId} />;
   }
+};
+
+const FriendItem = ({ userId }: { userId: string }) => {
+  const query = useQuery(['cover', userId], () =>
+    userService.getUserCoverById(userId)
+  );
+
+  if (query.isLoading) {
+    return null;
+  }
+  if (query.isError) {
+    logError(query.error);
+  }
+
+  const user = query.data;
+
+  return (
+    <div>
+      <div>
+        {user.name.firstName} {user.name.lastName}
+      </div>
+    </div>
+  );
 };
 
 const UserPage = () => {
@@ -70,6 +94,8 @@ const UserPage = () => {
 
   const user = userQuery.data;
 
+  const style = { border: '1px solid black' }; // TEMP
+
   return (
     <div>
       <div>
@@ -80,6 +106,20 @@ const UserPage = () => {
         userFirstName={user.name.firstName}
         friendData={friendsQuery.data as FriendData}
       />
+      <div style={style}>
+        <div>Friends</div>
+        <div>
+          {user.friends.length}{' '}
+          {user.friends.length === 1 ? 'friend' : 'friends'}
+        </div>
+        {user.friends.map((userId: string) => (
+          <FriendItem userId={userId} key={userId} />
+        ))}
+      </div>
+      <div>Posts</div>
+      {user.posts.map((postId: string) => (
+        <Post postId={postId} key={postId} />
+      ))}
     </div>
   );
 };

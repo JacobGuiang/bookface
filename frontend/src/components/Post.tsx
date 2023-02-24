@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { CurrentUserContext } from '../App';
 import { useQuery } from 'react-query';
 import { User } from '../types';
+import { Link } from 'react-router-dom';
 import postService from '../services/post';
 import LikePostButton from './LikePostButton';
 import UnlikePostButton from './UnlikePostButton';
@@ -31,9 +32,9 @@ const Post = ({ postId }: { postId: string }) => {
 
   return (
     <div style={style}>
-      <div>
+      <Link to={`users/${post.author.id}`}>
         {post.author.name.firstName} {post.author.name.lastName}
-      </div>
+      </Link>
       <div>{post.date}</div>
       {currentUser.id === post.author.id && (
         <DeletePostButton postId={post.id} />
